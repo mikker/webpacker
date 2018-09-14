@@ -53,6 +53,9 @@ class Webpacker::Engine < ::Rails::Engine
   initializer "webpacker.proxy" do |app|
     insert_middleware = Webpacker.config.dev_server.present? rescue nil
     if insert_middleware
+      # Middlewares is frozen for some reason?
+      app.middleware.middlewares = app.middleware.middlewares.dup
+
       app.middleware.insert_before 0,
         Rails::VERSION::MAJOR >= 5 ?
           Webpacker::DevServerProxy : "Webpacker::DevServerProxy", ssl_verify_none: true
